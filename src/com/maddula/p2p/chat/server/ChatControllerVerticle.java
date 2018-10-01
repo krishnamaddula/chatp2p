@@ -9,9 +9,7 @@ import io.vertx.core.json.JsonObject;
 public class ChatControllerVerticle extends AbstractVerticle{
 
 	@Override
-	public void start() throws Exception {
-		System.out.println("Inside Chat Controller");
-		
+	public void start() throws Exception {		
 		vertx.eventBus().consumer("chat.server.main", message -> {
 			JsonObject body = (JsonObject)message.body();
 			switch (body.getString("type")) {
