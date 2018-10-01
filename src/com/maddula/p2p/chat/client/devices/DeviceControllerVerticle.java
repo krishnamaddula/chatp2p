@@ -4,6 +4,8 @@ import com.maddula.p2p.chat.util.Util;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.shareddata.LocalMap;
+import io.vertx.core.shareddata.SharedData;
 import io.vertx.ext.web.Router;
 
 public class DeviceControllerVerticle extends AbstractVerticle{
@@ -16,6 +18,10 @@ public class DeviceControllerVerticle extends AbstractVerticle{
 			String from = routingContext.request().getParam("from");
 			String to = routingContext.request().getParam("to");
 			String message = routingContext.request().getParam("message");
+			
+			SharedData sharedData = vertx.sharedData();
+			LocalMap<Long,String> historyMap = sharedData.getLocalMap("chatHistory");
+			historyMap.put(System.currentTimeMillis(), "From:"+ from + ":To:"+ to + "Message:"+ message);
 
 			System.out.println("Message from " +from+ " Delivered to Server (/)");
 			vertx.eventBus().send(Util.generateChannelAddress(from, to), message);
@@ -30,6 +36,11 @@ public class DeviceControllerVerticle extends AbstractVerticle{
 			input.put("from", routingContext.request().getParam("from"));
 			input.put("to", routingContext.request().getParam("to"));
 			input.put("message", routingContext.request().getParam("message"));
+			
+			SharedData sharedData = vertx.sharedData();
+			LocalMap<Long,String> historyMap = sharedData.getLocalMap("chatHistory");
+			historyMap.put(System.currentTimeMillis(), "From:"+ routingContext.request().getParam("from") + ":To:"+
+					routingContext.request().getParam("to") + "Message:"+ routingContext.request().getParam("message"));
 
 			vertx.eventBus().send("chat.server.main", input, message -> {
 				System.out.println("Message from " + input.getString("from") + " Delivered to Server (/)");
@@ -61,6 +72,11 @@ public class DeviceControllerVerticle extends AbstractVerticle{
 					.end("Remaining verticles::" + vertx.deploymentIDs());
 		});
 
+		router.route("/chat/history/from/:from/to/:to").handler(routingContext -> {
+			SharedData sharedData = vertx.sharedData();
+			LocalMap<Long,String> historyMap = sharedData.getLocalMap("chatHistory");
+			routingContext.response().putHeader("Content-Type", "text/html").end(historyMap.toString());
+		});
 		
 		vertx.createHttpServer().requestHandler(router::accept).listen(7777);
 	}

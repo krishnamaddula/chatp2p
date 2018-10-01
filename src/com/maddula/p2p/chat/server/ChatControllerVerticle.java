@@ -5,11 +5,13 @@ import com.maddula.p2p.chat.util.Util;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.shareddata.LocalMap;
+import io.vertx.core.shareddata.SharedData;
 
 public class ChatControllerVerticle extends AbstractVerticle{
 
 	@Override
-	public void start() throws Exception {		
+	public void start() throws Exception {			 
 		vertx.eventBus().consumer("chat.server.main", message -> {
 			JsonObject body = (JsonObject)message.body();
 			switch (body.getString("type")) {

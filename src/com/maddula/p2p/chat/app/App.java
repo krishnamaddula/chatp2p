@@ -13,10 +13,6 @@ public class App {
 
 		vertx.deployVerticle(new ChatControllerVerticle());
 		Thread.sleep(1000);
-		/*vertx.deployVerticle(new SteveDeviceVerticle());
-		Thread.sleep(1000);
-		vertx.deployVerticle(new RonDeviceVerticle());*/
-		Thread.sleep(1000);
 		vertx.deployVerticle(new DeviceControllerVerticle());
 	}
 
