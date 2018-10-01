@@ -1,5 +1,7 @@
 package com.maddula.p2p.chat.client.devices;
 
+import com.maddula.p2p.chat.util.Util;
+
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.json.JsonObject;
 
@@ -8,30 +10,28 @@ public class SteveDeviceVerticle extends AbstractVerticle{
 
 	@Override
 	public void start() throws Exception {
-		System.out.println("Inside Steve's Device");
-		
-		
+		System.out.println("Inside Steve's Device");	
 			input = new JsonObject();
 			input.put("type", "create_p2p_chat");
 			input.put("from", "steve");
-			input.put("to", "ronald");
+			input.put("to", "ron");
+			input.put("message", "Hi Ronald!!");
+			
 			vertx.eventBus().send("chat.server.main", input, message -> {
-				System.out.println("Connection With Chat Server Acknowledgement");
-				
-				//Start sending messages to Ron
-				JsonObject output = (JsonObject)message.result().body();
-				vertx.eventBus().send(output.getString("address"), "Hi Ronald!!");
+				System.out.println("Message from " + input.getString("from") + " Delivered to Server (/)");
+				new Util().sendMessage(message, vertx);
 
 				
 				
-				//Disconnect Chat with Ron
+			/*	//Disconnect Chat with Ron
 				input = new JsonObject();
 				input.put("type", "destroy_p2p_chat");
 				input.put("deploymentId", output.getString("deploymentId"));
-				vertx.eventBus().send("chat.server.main", input);
+				vertx.eventBus().send("chat.server.main", input);*/
 				
 			});
 	}
+
 
 }
 

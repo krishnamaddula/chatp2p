@@ -13,9 +13,7 @@ public class ChatChannelVerticle extends AbstractVerticle{
 	}
 	
 	@Override
-	public void start() throws Exception {
-		System.out.println("Inside Chat Channel");
-		
+	public void start() throws Exception {		
 		vertx.eventBus().consumer(this.address, message -> {
 			System.out.println(this.address + " received message.." + message.body());
 		});
